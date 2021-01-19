@@ -75,48 +75,48 @@ class RnaSeq(jmpipe):
                 => project.mutiqc()
     """
 
-    def qc(self, rawqc=True, cleanqc=True, factp=True):
-        def fastqc(filelist: list, outpath):
+    def qc(self, rawqc=True, cleanqc=True, fastp=True):
+        def fastqc(filelist: list, outpath:Path):
             for _ in filelist:
+                if not (outpath / 'fastqc_res').exists():
+                    (outpath / 'fastqc_res').mkdir()
                 cmd = '{} -o {}/fastqc_res -f fastq {}'.format(self.fastqc, outpath, _)
-                print(cmd)
+                subprocess.run(cmd, shell=True)
 
         if rawqc:
             """fastqc for raw data
             """
-            p = Path(self.rawdata) / 'rawqc'
-            if not p.exists():
-                p.mkdir()
             fastqlist = []
             for sample_id, _ in self.sampledict.items():
                 f, r = _['rawfq']
                 fastqlist.extend([f, r])
             fastqc(fastqlist, p)
 
-        if factp:
+        if fastp:
             for sample_id, _ in self.sampledict.items():
                 f, r = _['rawfq']
-                fout, rout = f.replace('fastq', 'fastp'), r.replace('fastq', 'fastp')
+                fn, rn = Path(f).name, Path(r).name
+                fout, rout = fn.replace('fastq', 'fastp'), rn.replace('fastq', 'fastp')
+                fout, rout = Path(self.mypwd)/ 'cleandata' / fout, Path(self.mypwd) / 'cleandata' / rout
                 _['cleanfq'] = (fout, rout)
                 cmd = '{} -i {} -I {} -o {} -O {}'.format(self.fastp, f, r, fout, rout)
                 print(cmd)
+                #subprocess.run(cmd, shell=True)
 
         if cleanqc:
             leanfastq = []
             for x in self.sampledict.values():
                 f, r = x['cleanfq']
                 leanfastq.extend([f, r])
-            fastqc(leanfastq, self.cleandata)
-
-        pass
+            fastqc(leanfastq, Path(self.cleandata))
 
     def multiqc(self,cleanfq=True,rawfq=True):
         if cleanfq:
             cmd = '{} {} -O {}'.format(self.multiqc_,str(self.mypwd / 'cleandata/fastqc_res'), str(self.mypwd / 'multiqc_res'))
-            print(cmd)
+            subprocess.run(cmd, shell=True)
         if rawfq:
             cmd = '{} {} -O {}'.format(self.multiqc_,str(self.mypwd / 'rawdata/fastqc_res'), str(self.mypwd / 'multiqc_res'))
-            print(cmd)
+            subprocess.run(cmd, shell=True)
 
     def align(self):
 
@@ -129,12 +129,13 @@ class RnaSeq(jmpipe):
 
 if __name__ ==  '__main__':
     manifest = r'E:\repository\pycharm_project\manifest'
-    
+
     project1 = RnaSeq(manifest, 'crc-lncRNA')
     # print(project1.samples)
     # print(project1.info)
-    
-    project1.qc(rawqc=True, factp=True, cleanqc=True)
+
+    project1.qc(rawqc=False, fastp=True, cleanqc=False)
     print('='*30)
     #print(project1.sampledict)
-    project1.multiqc()
+    #project1.multiqc()
+    print(project1.sampledict)
