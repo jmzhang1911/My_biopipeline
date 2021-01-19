@@ -90,7 +90,7 @@ class RnaSeq(jmpipe):
             for sample_id, _ in self.sampledict.items():
                 f, r = _['rawfq']
                 fastqlist.extend([f, r])
-            fastqc(fastqlist, p)
+            fastqc(fastqlist, Path(self.rawdata))
 
         if fastp:
             for sample_id, _ in self.sampledict.items():
