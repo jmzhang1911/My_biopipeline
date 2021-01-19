@@ -127,13 +127,14 @@ class RnaSeq(jmpipe):
         pass
 
 
-manifest = r'E:\repository\pycharm_project\manifest'
-
-project1 = RnaSeq(manifest, 'crc-lncRNA')
-# print(project1.samples)
-# print(project1.info)
-
-project1.qc(rawqc=True, factp=True, cleanqc=True)
-print('='*30)
-#print(project1.sampledict)
-project1.multiqc()
+if __name__ ==  '__main__':
+    manifest = r'E:\repository\pycharm_project\manifest'
+    
+    project1 = RnaSeq(manifest, 'crc-lncRNA')
+    # print(project1.samples)
+    # print(project1.info)
+    
+    project1.qc(rawqc=True, factp=True, cleanqc=True)
+    print('='*30)
+    #print(project1.sampledict)
+    project1.multiqc()
