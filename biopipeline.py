@@ -3,7 +3,7 @@ import datetime
 import subprocess
 
 
-class jmpipe:
+class JmPipe:
     """Controler of pipeline
 
     """
@@ -65,7 +65,7 @@ class jmpipe:
         return 'The project is ===>{}\tmade in {} by jmzhang'.format(self._name, self._time)
 
 
-class RnaSeq(jmpipe):
+class RnaSeq(JmPipe):
     """This is a pipeline of RNA-Seq
     step01: project = RnaSeq('pathtomanifest.txt', 'projectname')
             project.info -> project-name project-time
